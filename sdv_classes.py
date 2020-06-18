@@ -14,9 +14,9 @@ class CommunityCenterRoom:
         return str(self.room_id)
 
     def get_bundles(self):
-        content = "\n"
+        content = []
         for bundle in self.bundles:
-            content += bundle.get_name() + "\n"
+            content.append(bundle)
         return content
 
     def append_bundle(self, bundle):
@@ -46,9 +46,9 @@ class Bundle:
         return self.name
         
     def get_items(self):
-        content = "\n"
+        content = []
         for item in self.items:
-            content += item
+            content.append(item)
         return content
     
     def get_amt_to_complete(self):
