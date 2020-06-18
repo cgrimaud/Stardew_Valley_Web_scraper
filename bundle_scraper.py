@@ -10,7 +10,7 @@ import os
 def scrape_web_page():
     url_bundles = "https://stardewvalleywiki.com/Bundles"
     response = requests.get(url_bundles)
-    content = BeautifulSoup(response.content, "lxml")
+    content = BeautifulSoup(response.content, "html.parser")
     return content
 
 def get_all_rooms():
@@ -78,55 +78,73 @@ def parse_room_bundles(data, room_name):
 
 
 ##### Menu Features ### 
+
+def show_menu(choices, allow_cancellation=False):
+    """
+    Display a command-line menu to the user, and let them make a selection
+
+        :param choices: A list of the options to display in the menu
+        :param allow_cancellation: If the user should be able to exit the menu without making a selection (default False)
+        :returns: The selection of the user, or None if cancelled.
+    """
+    options = {}
+    # Print the options out to the user, enumerated with a numeric choice number
+    for index, choice in enumerate(choices, start=1):
+        print(f'{index}) {choice}')
+        # We store the choice in a dictionary for easy looking-up later
+        options[str(index)] = choice  
+    
+    # Add a cancellation option if it was requested (default is False)
+    if allow_cancellation:
+        print('0) Cancel')
+        options['0'] = None  # If the user does choose to cancel, we will return None
+    
+    # Simply loop until the user makes a valid selection
+    user_input = input('Select an option: ')
+    while user_input not in options.keys():
+        print('Invalid selection')
+        user_input = input('Select an option: ')
+    
+    # Look up the selected item and return it
+    return options[user_input]
+
 def clear():
     os.system('cls' if os.name =='nt' else 'clear')
 
-def view_rooms():
-    """ View List of Community Center Rooms """
-    # rooms = get_all_rooms()
-    # choice = None
-
-    # print("#"*20)
-    # for room in rooms:
-    #     print('{}) {}'.format(room.get_room_id(), room.get_name()))
-    # print("#"*20)
-    # print("Enter room number you would like to view\n(Enter 'q' to quit)")
-    # choice = input('Selection: ').lower().strip()
-    # if choice == 'q':
-    #     break
-    # else:
+def get_bundles(room_name)
+    """ Returns a list of Bundle objects associated with a specific CommunityCenterRoom object """
     pass
+
+def get_items(room_name)
+    """ Returns a list of Item objects associated with a specific Bundle object """
+    pass
+
+def get_room_names():
+    """ Retruns list of room names """
+    room_names = []
+    rooms = get_all_rooms()
+    for room in rooms:
+        room_names.append(room.name)
+    return room_names
         
-def view_bundles():
-    """ View list of Bundles """
+def view_bundles(room_name):
+    """ View list of Bundles in a specific room""" 
     pass
 
-def view_items():
+
+def view_items(bundle_name):
     """ View bundle items """
+
+    pass
 
 def menu_loop():
     """ Show the main menu """
-    choice = None
+    
     print("Welcome to the Stardew Valley Community Center Bundle Tracker!")
-    while choice != 'q':    
-        print("Enter 'q' to quit.")
-        for key, value in main_menu.items():
-              print('{}) {}'.format(key, value.__doc__))
-        choice = input('Selection: ').lower().strip()
-        
-        if choice in main_menu:
-            clear()
-            main_menu[choice]()
+    print('*' * 40)
+    print("Please select a room")
+    user_input = show_menu(view_rooms(), allow_cancellation=True)
+    view_bundles(user_input)
 
+#menu_loop()
 
-main_menu = OrderedDict([
-    ('1', view_rooms),
-    ('2', view_bundles),
-])
-
-room_menu = OrderedDict([
-    ('1', view_bundles),
-    ('2', view_items)
-])
-
-menu_loop()
