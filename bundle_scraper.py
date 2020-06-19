@@ -114,10 +114,17 @@ def show_menu(choices, allow_cancellation=False):
     return options[user_input]
 
 def clear():
+    """ clears the console """
     os.system('cls' if os.name =='nt' else 'clear')
 
 def get_room_bundles(room_name):
-    """ Returns a list of Bundle objects associated with a specific CommunityCenterRoom object """
+    """ Returns a list of Bundle objects associated with a specific CommunityCenterRoom object
+    Parameters: 
+        room_name: name of CommunityCenterRoom Object
+    Returns:
+        room_bundles list: a list of Bundle objects associated with the CommunityCenterRoom passed in
+    """
+
     rooms = get_all_rooms()
     bundles = []
     for room in rooms:
@@ -127,9 +134,14 @@ def get_room_bundles(room_name):
     room_bundles = [item for sublist in bundles for item in sublist]
     return room_bundles
     
-
 def get_bundle_items(room_name, bundle_name):
-    """ Returns a list of Item objects associated with a specific Bundle object """
+    """ Returns a list of Item objects associated with a specific Bundle object
+    Parameters: 
+        room_name: name of CommunityCenterRoom Object
+        bundle_name: name of Bundle object inside of the CommunityCenterRoom Object
+    Returns:
+        bundle_items list: a list of Item objects associated with the Bundle object passed in
+    """
     
     bundles = get_room_bundles(room_name)
     items = []
@@ -140,7 +152,12 @@ def get_bundle_items(room_name, bundle_name):
     return bundle_items
 
 def get_names(obj_list):
-    """ Retruns list of room names """
+    """ Retruns list of names
+    Parameters: 
+        obj_list: list of objects where there objects have 'name' as an attribute
+    Returns:
+        names list: list of the name attributes in the obj_list
+    """
     names = []
     for obj in obj_list:
         names.append(obj.name)
@@ -157,6 +174,8 @@ def room_menu():
     user_selected_room = show_menu(get_names(get_all_rooms()), allow_cancellation=True)
     bundle_menu(user_selected_room)
 
+    #TODO : if 0 selected, exit out of program
+
 def bundle_menu(room):
     """ Show menu of bundles in a specific room """
 
@@ -166,6 +185,8 @@ def bundle_menu(room):
     item_menu(room, user_selected_bundle)
 
     #TODO : add conditional to check for Vault. If Vault selected, selcting the bundle should mark the bundle as 'complete'
+    #TODO : if 0 selected go back to room_menu
+
 
 def item_menu(room, bundle):
     """ Show menu of items in a specific bundle """
@@ -173,6 +194,10 @@ def item_menu(room, bundle):
     clear()
     print("Select the item you've donated to the Community Center")
     user_selected_item = show_menu(get_names(get_bundle_items(room, bundle)), allow_cancellation=True)
+
+    #TODO : user_selected_item should switch the item.donated value. If that value is False, switch to true. If true, switch to false
+    #TODO : while user_selected_item is not 0, let user continue to select items.
+    #TODO : if 0 selected, go back to bundle_menu
 
 room_menu()
 
