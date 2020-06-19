@@ -4,6 +4,7 @@ class CommunityCenterRoom:
     def __init__(self, name, bundles = [], completed = False):
         self.name = name
         self.bundles = bundles
+        self.completed = completed
         self.room_id = CommunityCenterRoom.room_id
         CommunityCenterRoom.room_id += 1
 
@@ -39,6 +40,7 @@ class Bundle:
         self.items = items
         self.amt_to_complete = amt_to_complete
         self.room = room
+        self.completed = completed
         self.bundle_id = Bundle.bundle_id
         Bundle.bundle_id += 1
 
@@ -72,9 +74,9 @@ class Bundle:
 
 class Item:
     item_id = 1
-    def __init__(self, name, donated = False):
+    def __init__(self, name, completed = False):
         self.name = name
-        self.donated = donated
+        self.completed = completed
         self.item_id = Item.item_id
         Item.item_id += 1
 
