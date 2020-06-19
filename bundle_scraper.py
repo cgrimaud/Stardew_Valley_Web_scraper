@@ -1,6 +1,6 @@
 from bs4 import BeautifulSoup
 import requests
-from sdv_classes import Bundle, CommunityCenterRoom
+from sdv_classes import Bundle, CommunityCenterRoom, Item
 # needed for OrderedDict
 from collections import OrderedDict
 # needed to clear screen
@@ -49,20 +49,25 @@ def parse_room_bundles(data, room_name):
             # Gets bundle name
             bundle_name = table.find('th').text[1:-1]
             # Gets items inside of bundle
+            bundle_items = []
             if "Quality" not in bundle_name:
                 rows = table.find_all('td')  
-                bundle_items = [] 
+                # bundle_items = [] 
                 for row in rows[2:-2:2]:
                     item_name = row.text.lstrip()
-                    bundle_items.append(item_name)
+                    item_object = Item(item_name)
+                    bundle_items.append(item_object)
             else:
                 rows = table.find_all('td')
-                bundle_items = []
+                # bundle_items = []
                 for row in rows:
                     tbl_row = row.find_all('table')
                     for tbl in tbl_row:
-                        bundle_items.append(tbl.text.lstrip() + '\n')
-        
+                        item_name = tbl.text.lstrip() + '\n'
+                        item_object = Item(item_name)
+                        bundle_items.append(item_object)
+                        
+
             # Gets number of required items to complete bundle
             required_items = 0    
             for row in rows[1].find_all(recursive=False):
@@ -70,7 +75,7 @@ def parse_room_bundles(data, room_name):
                     required_items += 1
         
             # create Bundle objects and append objects to a list
-            bundle_object = Bundle(bundle_name, bundle_items, required_items, cc_room)
+            bundle_object = Bundle(bundle_name, required_items, cc_room, bundle_items)
             bundles.append(bundle_object)
 
     return bundles
@@ -111,40 +116,76 @@ def show_menu(choices, allow_cancellation=False):
 def clear():
     os.system('cls' if os.name =='nt' else 'clear')
 
-def get_bundles(room_name)
+def get_room_bundles(room_name):
     """ Returns a list of Bundle objects associated with a specific CommunityCenterRoom object """
-    pass
-
-def get_items(room_name)
-    """ Returns a list of Item objects associated with a specific Bundle object """
-    pass
-
-def get_room_names():
-    """ Retruns list of room names """
-    room_names = []
     rooms = get_all_rooms()
+    bundles = []
     for room in rooms:
-        room_names.append(room.name)
-    return room_names
+        if room.name == room_name:
+            bundles.append(room.bundles)
+    # list comprehension to flatten bundles list  
+    room_bundles = [item for sublist in bundles for item in sublist]
+    return room_bundles
+    
+
+def get_bundle_items(room_name, bundle_name):
+    """ Returns a list of Item objects associated with a specific Bundle object """
+    
+    bundles = get_room_bundles(room_name)
+    items = []
+    for bundle in bundles:
+        if bundle.name == bundle_name:
+            items.append(bundle.items)
+    bundle_items = [item for sublist in items for item in sublist]
+    return bundle_items
+
+def get_names(obj_list):
+    """ Retruns list of room names """
+    names = []
+    for obj in obj_list:
+        names.append(obj.name)
+    return names
         
-def view_bundles(room_name):
-    """ View list of Bundles in a specific room""" 
-    pass
 
-
-def view_items(bundle_name):
-    """ View bundle items """
-
-    pass
-
-def menu_loop():
+def room_menu():
     """ Show the main menu """
     
+    clear()
     print("Welcome to the Stardew Valley Community Center Bundle Tracker!")
     print('*' * 40)
     print("Please select a room")
-    user_input = show_menu(view_rooms(), allow_cancellation=True)
-    view_bundles(user_input)
+    user_selected_room = show_menu(get_names(get_all_rooms()), allow_cancellation=True)
+    bundle_menu(user_selected_room)
 
-#menu_loop()
+def bundle_menu(room):
+    """ Show menu of bundles in a specific room """
+
+    clear()
+    print("Please select a bundle")
+    user_selected_bundle = show_menu(get_names(get_room_bundles(room)), allow_cancellation=True)
+    item_menu(room, user_selected_bundle)
+
+    #TODO : add conditional to check for Vault. If Vault selected, selcting the bundle should mark the bundle as 'complete'
+
+def item_menu(room, bundle):
+    """ Show menu of items in a specific bundle """
+
+    clear()
+    print("Select the item you've donated to the Community Center")
+    user_selected_item = show_menu(get_names(get_bundle_items(room, bundle)), allow_cancellation=True)
+
+room_menu()
+
+
+# items = get_bundle_items("Crafts Room", "Fall Foraging Bundle")
+# for item in items:
+#     print(item.item_id)
+
+# bundles = get_room_bundles('Crafts Room')
+# for bundle in bundles:
+#     print(bundle.items)
+
+# rooms = get_all_rooms()
+# for room in rooms:
+#     print(room)
 
