@@ -5,7 +5,9 @@ from sdv_classes import Bundle, CommunityCenterRoom, Item
 from collections import OrderedDict
 # needed to clear screen
 import os
+import time
 
+### Scrape page, parse data into list of objects ###
 
 def scrape_web_page():
     url_bundles = "https://stardewvalleywiki.com/Bundles"
@@ -82,36 +84,7 @@ def parse_room_bundles(data, room_name):
 
 
 
-##### Menu Features ### 
-
-def show_menu(choices, allow_cancellation=False):
-    """
-    Display a command-line menu to the user, and let them make a selection
-
-        :param choices: A list of the options to display in the menu
-        :param allow_cancellation: If the user should be able to exit the menu without making a selection (default False)
-        :returns: The selection of the user, or None if cancelled.
-    """
-    options = {}
-    # Print the options out to the user, enumerated with a numeric choice number
-    for index, choice in enumerate(choices, start=1):
-        print(f'{index}) {choice}')
-        # We store the choice in a dictionary for easy looking-up later
-        options[str(index)] = choice  
-    
-    # Add a cancellation option if it was requested (default is False)
-    if allow_cancellation:
-        print('0) Cancel')
-        options['0'] = None  # If the user does choose to cancel, we will return None
-    
-    # Simply loop until the user makes a valid selection
-    user_input = input('Select an option: ')
-    while user_input not in options.keys():
-        print('Invalid selection')
-        user_input = input('Select an option: ')
-    
-    # Look up the selected item and return it
-    return options[user_input]
+#### Functions working with list of objects ###
 
 def clear():
     """ clears the console """
@@ -163,6 +136,46 @@ def get_names(obj_list):
         names.append(obj.name)
     return names
         
+def update_completed_value(obj_to_update):
+    if obj_to_update.completed == False:
+        obj_to_update.completed = True
+    else:
+        obj_to_update.completed = False
+
+
+### Menus ### 
+
+def show_menu(choices, allow_cancellation=False):
+    """
+    Display a command-line menu to the user, and let them make a selection
+
+        :param choices: A list of the options to display in the menu
+        :param allow_cancellation: If the user should be able to exit the menu without making a selection (default False)
+        :returns: The selection of the user, or None if cancelled.
+    """
+    options = {}
+    # Print the options out to the user, enumerated with a numeric choice number
+    for index, choice in enumerate(choices, start=1):
+        print(f'{index}) {choice}')
+        # We store the choice in a dictionary for easy looking-up later
+        options[str(index)] = choice  
+    
+    # Add a cancellation option if it was requested (default is False)
+    if allow_cancellation:
+        print('0) Exit')
+        options['0'] = None  # If the user does choose to cancel, we will return None
+    else:
+        print('0) Return to Main Menu')
+        options['0'] = None  
+    
+    # Simply loop until the user makes a valid selection
+    user_input = input('Select an option: ')
+    while user_input not in options.keys():
+        print('Invalid selection')
+        user_input = input('Select an option: ')
+    
+    # Look up the selected item and return it
+    return options[user_input]
 
 def room_menu():
     """ Show the main menu """
@@ -172,28 +185,70 @@ def room_menu():
     print('*' * 40)
     print("Please select a room")
     user_selected_room = show_menu(get_names(get_all_rooms()), allow_cancellation=True)
-    bundle_menu(user_selected_room)
+    if user_selected_room == None:
+        exit()
+    else:
+        bundle_menu(user_selected_room)
 
-    #TODO : if 0 selected, exit out of program
 
 def bundle_menu(room):
     """ Show menu of bundles in a specific room """
 
-    clear()
-    print("Please select a bundle")
-    user_selected_bundle = show_menu(get_names(get_room_bundles(room)), allow_cancellation=True)
-    item_menu(room, user_selected_bundle)
+    # Vault bundles == items so vault object doesn't have items
+    if room == "Vault":
+        clear()
+        print("Please select the bundle you've completed")
+        user_selected_bundle = show_menu(get_names(get_room_bundles(room)), allow_cancellation=False)
+        while user_selected_bundle is not None:
+            room_bundles = get_room_bundles(room)
+            for bundle in room_bundles:
+                if user_selected_bundle == bundle.name:
+                    update_completed_value(bundle)
+                    print(f'{bundle.name} is now {bundle.completed}')
+                    time.sleep(2)
+                    clear()
+                    print("Please select the bundle you've completed")
+                    user_selected_bundle = show_menu(get_names(get_room_bundles(room)), allow_cancellation=False)
 
-    #TODO : add conditional to check for Vault. If Vault selected, selcting the bundle should mark the bundle as 'complete'
-    #TODO : if 0 selected go back to room_menu
+        else:
+            room_menu()
 
+        # if user_selected_bundle == None:
+        #     room_menu()
+        # else:
+        #     room_bundles = get_room_bundles(room)
+        #     for bundle in room_bundles:
+        #         if user_selected_bundle == bundle.name:
+        #             update_completed_value(bundle)
+        #             print(f'{bundle.name} is now {bundle.completed}')
+        #             time.sleep(2)
+        #             clear()
+        #             print("Please select the bundle you've completed")
+        #     user_selected_bundle = show_menu(get_names(get_room_bundles(room)), allow_cancellation=False)
+
+
+    else: 
+        clear()
+        print("Please select a bundle")
+        user_selected_bundle = show_menu(get_names(get_room_bundles(room)), allow_cancellation=False)
+        if user_selected_bundle == None:
+            room_menu()
+        else:
+            item_menu(room, user_selected_bundle)
+    
 
 def item_menu(room, bundle):
     """ Show menu of items in a specific bundle """
 
     clear()
     print("Select the item you've donated to the Community Center")
-    user_selected_item = show_menu(get_names(get_bundle_items(room, bundle)), allow_cancellation=True)
+    user_selected_item = show_menu(get_names(get_bundle_items(room, bundle)), allow_cancellation=False)
+    if user_selected_item != None:
+        clear()
+        print("Select the item you've donated to the Community Center")
+        user_selected_item = show_menu(get_names(get_bundle_items(room, bundle)), allow_cancellation=False)
+    else:
+        room_menu()
 
     #TODO : user_selected_item should switch the item.donated value. If that value is False, switch to true. If true, switch to false
     #TODO : while user_selected_item is not 0, let user continue to select items.
