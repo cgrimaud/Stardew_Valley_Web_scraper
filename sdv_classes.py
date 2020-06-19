@@ -1,7 +1,7 @@
 
 class CommunityCenterRoom:
     room_id = 1
-    def __init__(self, name, bundles = []):
+    def __init__(self, name, bundles = [], completed = False):
         self.name = name
         self.bundles = bundles
         self.room_id = CommunityCenterRoom.room_id
@@ -14,9 +14,9 @@ class CommunityCenterRoom:
         return str(self.room_id)
 
     def get_bundles(self):
-        content = []
+        content = "\n"
         for bundle in self.bundles:
-            content.append(bundle)
+            content += bundle.get_name() + "\n"
         return content
 
     def append_bundle(self, bundle):
@@ -34,7 +34,7 @@ class CommunityCenterRoom:
 
 class Bundle:
     bundle_id = 1
-    def __init__(self, name, items, amt_to_complete, room):
+    def __init__(self, name, amt_to_complete, room, items = [], completed = False):
         self.name = name
         self.items = items
         self.amt_to_complete = amt_to_complete
@@ -46,9 +46,9 @@ class Bundle:
         return self.name
         
     def get_items(self):
-        content = []
+        content = "\n"
         for item in self.items:
-            content.append(item)
+            content += item.get_name() + "\n"
         return content
     
     def get_amt_to_complete(self):
@@ -68,3 +68,18 @@ class Bundle:
             self.room,
             self.get_items()
         )
+
+
+class Item:
+    item_id = 1
+    def __init__(self, name, donated = False):
+        self.name = name
+        self.donated = donated
+        self.item_id = Item.item_id
+        Item.item_id += 1
+
+    def __str__(self):
+        return "{}".format(self.name)
+
+    def get_name(self):
+        return self.name
