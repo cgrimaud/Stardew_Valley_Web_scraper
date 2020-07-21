@@ -1,4 +1,5 @@
 from bs4 import BeautifulSoup
+import pickle
 import requests
 from sdv_classes import Bundle, CommunityCenterRoom, Item
 # needed for OrderedDict
@@ -53,15 +54,13 @@ def parse_room_bundles(data, room_name):
             # Gets items inside of bundle
             bundle_items = []
             if "Quality" not in bundle_name:
-                rows = table.find_all('td')  
-                # bundle_items = [] 
+                rows = table.find_all('td')   
                 for row in rows[2:-2:2]:
                     item_name = row.text.lstrip()
                     item_object = Item(item_name)
                     bundle_items.append(item_object)
             else:
                 rows = table.find_all('td')
-                # bundle_items = []
                 for row in rows:
                     tbl_row = row.find_all('table')
                     for tbl in tbl_row:
@@ -82,6 +81,11 @@ def parse_room_bundles(data, room_name):
 
     return bundles
 
+def pickle_rooms_to_file():
+    rooms = get_all_rooms()
+    pickle_out = open('rooms', "wb")
+    pickle.dump(rooms, pickle_out)
+    pickle_out.close()
 
 
 #### Functions working with list of objects ###
@@ -97,12 +101,14 @@ def get_room_bundles(room_name):
     Returns:
         room_bundles list: a list of Bundle objects associated with the CommunityCenterRoom passed in
     """
-
-    rooms = get_all_rooms()
+    # open and load rooms file
+    pickle_in = open("rooms", 'rb')
+    rooms = pickle.load(pickle_in)
     bundles = []
     for room in rooms:
         if room.name == room_name:
             bundles.append(room.bundles)
+    pickle_in.close()
     # list comprehension to flatten bundles list  
     room_bundles = [item for sublist in bundles for item in sublist]
     return room_bundles
@@ -136,12 +142,6 @@ def get_names(obj_list):
         names.append(obj.name)
     return names
         
-def update_completed_value(obj_to_update):
-    if obj_to_update.completed == False:
-        obj_to_update.completed = True
-    else:
-        obj_to_update.completed = False
-
 
 ### Menus ### 
 
@@ -180,16 +180,20 @@ def show_menu(choices, allow_cancellation=False):
 def room_menu():
     """ Show the main menu """
     
+    pickle_in = open("rooms", 'rb')
+    rooms = pickle.load(pickle_in)
+
     clear()
     print("Welcome to the Stardew Valley Community Center Bundle Tracker!")
-    print('*' * 40)
+    print('*' * 60)
     print("Please select a room")
-    user_selected_room = show_menu(get_names(get_all_rooms()), allow_cancellation=True)
+    print('-' * 25)
+    user_selected_room = show_menu(get_names(rooms), allow_cancellation=True)
     if user_selected_room == None:
+        pickle_in.close()
         exit()
     else:
         bundle_menu(user_selected_room)
-
 
 def bundle_menu(room):
     """ Show menu of bundles in a specific room """
@@ -198,74 +202,50 @@ def bundle_menu(room):
     if room == "Vault":
         clear()
         print("Please select the bundle you've completed")
+        print('-' * 25)
         user_selected_bundle = show_menu(get_names(get_room_bundles(room)), allow_cancellation=False)
         while user_selected_bundle is not None:
             room_bundles = get_room_bundles(room)
             for bundle in room_bundles:
                 if user_selected_bundle == bundle.name:
-                    update_completed_value(bundle)
-                    print(f'{bundle.name} is now {bundle.completed}')
-                    time.sleep(2)
+                    print(f'{bundle.name} has been donated!')
+                    time.sleep(1)
                     clear()
                     print("Please select the bundle you've completed")
                     user_selected_bundle = show_menu(get_names(get_room_bundles(room)), allow_cancellation=False)
-
         else:
             room_menu()
-
-        # if user_selected_bundle == None:
-        #     room_menu()
-        # else:
-        #     room_bundles = get_room_bundles(room)
-        #     for bundle in room_bundles:
-        #         if user_selected_bundle == bundle.name:
-        #             update_completed_value(bundle)
-        #             print(f'{bundle.name} is now {bundle.completed}')
-        #             time.sleep(2)
-        #             clear()
-        #             print("Please select the bundle you've completed")
-        #     user_selected_bundle = show_menu(get_names(get_room_bundles(room)), allow_cancellation=False)
-
 
     else: 
         clear()
         print("Please select a bundle")
+        print('-' * 25)
         user_selected_bundle = show_menu(get_names(get_room_bundles(room)), allow_cancellation=False)
         if user_selected_bundle == None:
             room_menu()
         else:
-            item_menu(room, user_selected_bundle)
-    
+            item_menu(room, user_selected_bundle)    
 
 def item_menu(room, bundle):
     """ Show menu of items in a specific bundle """
 
     clear()
     print("Select the item you've donated to the Community Center")
+    print('-' * 55)
     user_selected_item = show_menu(get_names(get_bundle_items(room, bundle)), allow_cancellation=False)
-    if user_selected_item != None:
-        clear()
-        print("Select the item you've donated to the Community Center")
-        user_selected_item = show_menu(get_names(get_bundle_items(room, bundle)), allow_cancellation=False)
+    while user_selected_item is not None:
+        bundle_items = get_bundle_items(room, bundle)
+        for item in bundle_items:
+            if user_selected_item == item.name:
+                print(f"You've donated the {item.name}")
+                time.sleep(1)
+                clear()
+                print("Select the item you've donated to the Community Center")
+                print('-' * 55)
+                user_selected_item = show_menu(get_names(get_bundle_items(room, bundle)), allow_cancellation=False)
     else:
         room_menu()
 
-    #TODO : user_selected_item should switch the item.donated value. If that value is False, switch to true. If true, switch to false
-    #TODO : while user_selected_item is not 0, let user continue to select items.
-    #TODO : if 0 selected, go back to bundle_menu
-
+pickle_rooms_to_file()
 room_menu()
-
-
-# items = get_bundle_items("Crafts Room", "Fall Foraging Bundle")
-# for item in items:
-#     print(item.item_id)
-
-# bundles = get_room_bundles('Crafts Room')
-# for bundle in bundles:
-#     print(bundle.items)
-
-# rooms = get_all_rooms()
-# for room in rooms:
-#     print(room)
 
