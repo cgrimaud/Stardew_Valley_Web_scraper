@@ -32,12 +32,29 @@ If you select a sepcific bundle, a list of donatable items associated with that 
 
 ## CL Requirements Met:
 
-* Implement a “master loop” console application where the user can repeatedly enter commands/perform actions, including choosing to exit the program
+#### Implement a “master loop” console application where the user can repeatedly enter commands/perform actions, including choosing to exit the program
 
-* Create a class, then create at least one object of that class and populate it with data
+#### Create a class, then create at least one object of that class and populate it with data
+I've created three classes as seen in [sdv_classes.py](https://github.com/cgrimaud/Stardew_Valley_Web_scraper/blob/ad2ded4e1f9b9f2b9a203667ce675fa8ff9d14b9/sdv_classes.py).
+* [Instances of CommunityCenterRoom](https://github.com/cgrimaud/Stardew_Valley_Web_scraper/blob/ad2ded4e1f9b9f2b9a203667ce675fa8ff9d14b9/bundle_scraper.py#L35) are created in the parse_rooms() function     
+* [Instances of Bundle](https://github.com/cgrimaud/Stardew_Valley_Web_scraper/blob/ad2ded4e1f9b9f2b9a203667ce675fa8ff9d14b9/bundle_scraper.py#L79) and [instances of Item](https://github.com/cgrimaud/Stardew_Valley_Web_scraper/blob/ad2ded4e1f9b9f2b9a203667ce675fa8ff9d14b9/bundle_scraper.py#L56-L69) are created in the parse_room_bundles() function
 
-* Create a dictionary or list, populate it with several values, retrieve at least one value, and use it in your program
+#### Create a dictionary or list, populate it with several values, retrieve at least one value, and use it in your program
+Lists are used throughout the program. 
+* [parse_rooms()](https://github.com/cgrimaud/Stardew_Valley_Web_scraper/blob/ad2ded4e1f9b9f2b9a203667ce675fa8ff9d14b9/bundle_scraper.py#L24-L36) & [parse_room_bundles()](https://github.com/cgrimaud/Stardew_Valley_Web_scraper/blob/ad2ded4e1f9b9f2b9a203667ce675fa8ff9d14b9/bundle_scraper.py#L38-L82) work together to create a complete list of CommunityCenterRoom Objects from the webscraped data (as well as using lists inside of the functions themselves).
+* [get_room_bundles()](https://github.com/cgrimaud/Stardew_Valley_Web_scraper/blob/ad2ded4e1f9b9f2b9a203667ce675fa8ff9d14b9/bundle_scraper.py#L97-L114), [get_bundle_items()](https://github.com/cgrimaud/Stardew_Valley_Web_scraper/blob/ad2ded4e1f9b9f2b9a203667ce675fa8ff9d14b9/bundle_scraper.py#L116-L131), & [get_names()](https://github.com/cgrimaud/Stardew_Valley_Web_scraper/blob/ad2ded4e1f9b9f2b9a203667ce675fa8ff9d14b9/bundle_scraper.py#L133-L143) each return lists which are utilized in the different menu functions. 
 
-* Read data from an external file, such as text, JSON, CSV, etc and use that data in your application
 
-* Create and call at least 3 functions, at least one of which must return a value that is used
+#### Read data from an external file, such as text, JSON, CSV, etc and use that data in your application
+The program first scrapes the Stardew Valley Wiki then [saves the parsed data to a file](https://github.com/cgrimaud/Stardew_Valley_Web_scraper/blob/ad2ded4e1f9b9f2b9a203667ce675fa8ff9d14b9/bundle_scraper.py#L84-L88) named rooms. That file is then opened and read in the "Functions working with list of objects" section of the code (specifically [here](https://github.com/cgrimaud/Stardew_Valley_Web_scraper/blob/ad2ded4e1f9b9f2b9a203667ce675fa8ff9d14b9/bundle_scraper.py#L104-L106) & [here](https://github.com/cgrimaud/Stardew_Valley_Web_scraper/blob/ad2ded4e1f9b9f2b9a203667ce675fa8ff9d14b9/bundle_scraper.py#L183-L184)). 
+
+#### Create and call at least 3 functions, at least one of which must return a value that is used
+* [parse_rooms()](https://github.com/cgrimaud/Stardew_Valley_Web_scraper/blob/ad2ded4e1f9b9f2b9a203667ce675fa8ff9d14b9/bundle_scraper.py#L24-L36) returns a list of CommunityCenterRoom objects and is called in [get_all_rooms()](https://github.com/cgrimaud/Stardew_Valley_Web_scraper/blob/ad2ded4e1f9b9f2b9a203667ce675fa8ff9d14b9/bundle_scraper.py#L22)
+
+* [parse_room_bundles()](https://github.com/cgrimaud/Stardew_Valley_Web_scraper/blob/ad2ded4e1f9b9f2b9a203667ce675fa8ff9d14b9/bundle_scraper.py#L38-L82) returns a list of Bundle Objects associated with a community center room and is called in [parse_rooms()](https://github.com/cgrimaud/Stardew_Valley_Web_scraper/blob/ad2ded4e1f9b9f2b9a203667ce675fa8ff9d14b9/bundle_scraper.py#L34)
+
+* [get_room_bundles()](https://github.com/cgrimaud/Stardew_Valley_Web_scraper/blob/ad2ded4e1f9b9f2b9a203667ce675fa8ff9d14b9/bundle_scraper.py#L97-L114) returns a list of Bundle objects associated with the CommunityCenterRoom passed in and is called in [get_bundle_items()](https://github.com/cgrimaud/Stardew_Valley_Web_scraper/blob/ad2ded4e1f9b9f2b9a203667ce675fa8ff9d14b9/bundle_scraper.py#L125) & [bundle_menu()](https://github.com/cgrimaud/Stardew_Valley_Web_scraper/blob/ad2ded4e1f9b9f2b9a203667ce675fa8ff9d14b9/bundle_scraper.py#L207-L227)
+
+* [get_bundle_items()](https://github.com/cgrimaud/Stardew_Valley_Web_scraper/blob/ad2ded4e1f9b9f2b9a203667ce675fa8ff9d14b9/bundle_scraper.py#L116-L131) returns a list of Item objects associated with the Bundle object passed in and is called in [item_menu()](https://github.com/cgrimaud/Stardew_Valley_Web_scraper/blob/ad2ded4e1f9b9f2b9a203667ce675fa8ff9d14b9/bundle_scraper.py#L240-L251)
+
+* [get_names()](https://github.com/cgrimaud/Stardew_Valley_Web_scraper/blob/ad2ded4e1f9b9f2b9a203667ce675fa8ff9d14b9/bundle_scraper.py#L133-L143) returns a list of names and is called in [room_menu()](https://github.com/cgrimaud/Stardew_Valley_Web_scraper/blob/ad2ded4e1f9b9f2b9a203667ce675fa8ff9d14b9/bundle_scraper.py#L191), [bundle_menu()](https://github.com/cgrimaud/Stardew_Valley_Web_scraper/blob/ad2ded4e1f9b9f2b9a203667ce675fa8ff9d14b9/bundle_scraper.py#L207-L227), & [item_menu()](https://github.com/cgrimaud/Stardew_Valley_Web_scraper/blob/ad2ded4e1f9b9f2b9a203667ce675fa8ff9d14b9/bundle_scraper.py#L240-L251) any time show_menu() is called. 
