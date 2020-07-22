@@ -201,6 +201,7 @@ def bundle_menu(room):
     # Vault bundles == items so vault object doesn't have items
     if room == "Vault":
         clear()
+        print("***", room, "***")
         print("Please select the bundle you've completed")
         print('-' * 25)
         user_selected_bundle = show_menu(get_names(get_room_bundles(room)), allow_cancellation=False)
@@ -211,13 +212,16 @@ def bundle_menu(room):
                     print(f'{bundle.name} has been donated!')
                     time.sleep(1)
                     clear()
+                    print("***", room, "***")
                     print("Please select the bundle you've completed")
+                    print('-' * 25)
                     user_selected_bundle = show_menu(get_names(get_room_bundles(room)), allow_cancellation=False)
         else:
             room_menu()
 
     else: 
         clear()
+        print("***", room, "***")
         print("Please select a bundle")
         print('-' * 25)
         user_selected_bundle = show_menu(get_names(get_room_bundles(room)), allow_cancellation=False)
@@ -230,6 +234,7 @@ def item_menu(room, bundle):
     """ Show menu of items in a specific bundle """
 
     clear()
+    print("***", bundle, "***")
     print("Select the item you've donated to the Community Center")
     print('-' * 55)
     user_selected_item = show_menu(get_names(get_bundle_items(room, bundle)), allow_cancellation=False)
@@ -240,6 +245,7 @@ def item_menu(room, bundle):
                 print(f"You've donated the {item.name}")
                 time.sleep(1)
                 clear()
+                print("***", bundle, "***")
                 print("Select the item you've donated to the Community Center")
                 print('-' * 55)
                 user_selected_item = show_menu(get_names(get_bundle_items(room, bundle)), allow_cancellation=False)
