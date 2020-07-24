@@ -1,6 +1,6 @@
 # Stardew Valley Webscraper
 
-Stardew Valley is an open-ended country-life RPG. One part of the game is the option to restore the dilapidated Community Center building by donating specific 
+Stardew Valley is an open-ended country-life RPG. One part of the game is the option to restore the dilapidated Community Center building by donating specific items. 
 
 This program scrapes https://stardewvalleywiki.com/Bundles and allows the user view Community Center Rooms, Bundles in those rooms, and donatable Items inside of those bundles all via the command line. 
 
