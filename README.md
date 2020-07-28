@@ -4,11 +4,23 @@ Stardew Valley is an open-ended country-life RPG. One part of the game is the op
 
 This program scrapes https://stardewvalleywiki.com/Bundles and allows the user view Community Center Rooms, Bundles in those rooms, and donatable Items inside of those bundles all via the command line. 
 
-This program was written in Python 3.8 and utilizes Pipenv to implement non-native libraries.  
+ 
 
 ## How to Run:
+This program was written in Python 3.8 and utilizes Pipenv to implement non-native libraries. 
+
+* Make sure you have Python 3.8
+
 Clone or Download the project and open it in Visual Studio Code. 
-Open a New Terminal and type the following in the command line:
+Open a New Terminal and type the following in the command line to install pipenv:
+
+```pip install pipenv```
+
+Then install the packages associated with the project by running:
+
+```pipenv install```
+
+Finally, run the project by typing:
 
 ```pipenv run python bundle_scraper.py```
 
