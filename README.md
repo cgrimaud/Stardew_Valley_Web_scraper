@@ -44,6 +44,8 @@ If you select a sepcific bundle, a list of donatable items associated with that 
 
 ## CL Requirements Met:
 
+#### 5+ Commits on Github
+
 #### Implement a “master loop” console application where the user can repeatedly enter commands/perform actions, including choosing to exit the program
 
 #### Create a class, then create at least one object of that class and populate it with data
